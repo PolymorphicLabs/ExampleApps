@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8" />
+        <meta name="format-detection" content="telephone=no" />
+        <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1" />
+
+        <link rel="stylesheet" type="text/css" href="css/index.css" />
+        <link rel="stylesheet" type="text/css" href="css/flightindicators.css" />
+        <title>SensorTag</title>
+    </head>
+    <body>
+        <div class="app">
+            <h1>Polymorphic Labs</h1>
+            <div id="mainPage">
+                <ul id="deviceList">
+                </ul>
+                
+                <footer id="Footer">
+                	<button id="connectButton">Connect</button>
+
+                </footer>
+            </div>
+            <div id="detailPage" style="display:none;">
+            	<div id="dataBody">
+            		<span id="attitude"></span>
+            		<span id="heading"></span>
+            		<span id="altimeter"></span>
+            		<span id="altGraph">
+            			<canvas id="altCanvas" width="100" height="100"></canvas>
+            		</span>
+            		<span id="speedText"></span>
+            		<span id="headingText"></span>
+					<span id="altitudeText"></span>
+
+                </div>
+                <span id="Footer">
+                	<button id="altButton">Zero Altimeter</button>
+                	<button id="disconnectButton">Disconnect</button>
+                	<button id="mapButton">Map</button>
+                </span>
+            </div>
+            <div id="mapPage" style="display:none;">
+            	<div style="width:100%;height:400px" id="mapBody">
+
+                </div>
+                <footer id="Footer">
+                	<button id="detailButton">Show Instruments</button>
+                </footer>
+            </div>
+        </div>
+        <script type="text/javascript" src="cordova.js"></script>
+        <script type="text/javascript" src="js/jquery-2.2.3.min.js"></script>
+		<script type="text/javascript" src="js/jquery.flightindicators.js"></script>
+		<script type="text/javascript" src="js/MadgwickAHRS.js"></script>
+        <script type="text/javascript" src="js/pmlManager.js"></script>
+        <script type="text/javascript" src="js/pmlDotMove.js"></script>
+        <script type="text/javascript" src="js/smoothie.js"></script>
+        <script type="text/javascript" src="js/index.js"></script>
+        
+        <script type="text/javascript">
+            app.initialize();
+        </script>
+    </body>
+</html>
