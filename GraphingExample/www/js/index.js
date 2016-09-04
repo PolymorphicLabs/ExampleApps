@@ -73,64 +73,91 @@ var app = {
 //	    var deviceSel = deviceList.getElementsByTagName('input');
 //	    deviceSel[deviceSel.length - 1].ontouchstart = app.onSelectDevice(this);
     },
-    onDeviceConnect: function(swInterface){
+    onDeviceConnect: function(device){
     	//Save interface
-    	app.connectedDevices.push(swInterface);
-    	
-    	//Create charts to display data from this device
-    	var smoothieAccel = new SmoothieChart({grid:{fillStyle:'#ffffff',strokeStyle:'#666666'},labels:{fillStyle:'#ee7217'}});
-    	var smoothieGyro = new SmoothieChart({grid:{fillStyle:'#ffffff',strokeStyle:'#666666'},labels:{fillStyle:'#ee7217'}});
-    	var smoothieMag = new SmoothieChart({grid:{fillStyle:'#ffffff',strokeStyle:'#666666'},labels:{fillStyle:'#ee7217'}});
-
-    	var accelX = new TimeSeries();
-    	var accelY = new TimeSeries();
-    	var accelZ = new TimeSeries();
-
-    	var gyroX = new TimeSeries();
-    	var gyroY = new TimeSeries();
-    	var gyroZ = new TimeSeries();
-
-    	var magX = new TimeSeries();
-    	var magY = new TimeSeries();
-    	var magZ = new TimeSeries();
-    	
-	    smoothieAccel.addTimeSeries(accelX, {lineWidth:2,strokeStyle:'#0000ff'});
-	    smoothieAccel.addTimeSeries(accelY, {lineWidth:2,strokeStyle:'#00ff00'});
-	    smoothieAccel.addTimeSeries(accelZ, {lineWidth:2,strokeStyle:'#ff0000'});
-	    smoothieAccel.streamTo(document.getElementById("accelCanvas" + swInterface.deviceId));
-      
-		smoothieGyro.addTimeSeries(gyroX, {lineWidth:2,strokeStyle:'#0000ff'});
-		smoothieGyro.addTimeSeries(gyroY, {lineWidth:2,strokeStyle:'#00ff00'});
-		smoothieGyro.addTimeSeries(gyroZ, {lineWidth:2,strokeStyle:'#ff0000'});
-		smoothieGyro.streamTo(document.getElementById("gyroCanvas" + swInterface.deviceId));
-    
-
-		smoothieMag.addTimeSeries(magX, {lineWidth:2,strokeStyle:'#0000ff'});
-		smoothieMag.addTimeSeries(magY, {lineWidth:2,strokeStyle:'#00ff00'});
-		smoothieMag.addTimeSeries(magZ, {lineWidth:2,strokeStyle:'#ff0000'});
-		smoothieMag.streamTo(document.getElementById("magCanvas" + swInterface.deviceId));
+    	app.connectedDevices.push(device.id);
 		
-		var onMoveData = function(data){
+		if(device.name === "Polymorphic Dot"){
+			
+	    	//Create charts to display data from this device
+	    	var smoothieAccel = new SmoothieChart({grid:{fillStyle:'#ffffff',strokeStyle:'#666666'},labels:{fillStyle:'#ee7217'}});
+	    	var smoothieGyro = new SmoothieChart({grid:{fillStyle:'#ffffff',strokeStyle:'#666666'},labels:{fillStyle:'#ee7217'}});
+	    	var smoothieMag = new SmoothieChart({grid:{fillStyle:'#ffffff',strokeStyle:'#666666'},labels:{fillStyle:'#ee7217'}});
 
-	        var a = new Int16Array(data);
-	        
-	        accelX.append(new Date().getTime(), app.sensorMpu9250AccConvert(a[3]));
-	        accelY.append(new Date().getTime(), app.sensorMpu9250AccConvert(a[4]));
-	        accelZ.append(new Date().getTime(), app.sensorMpu9250AccConvert(a[5]));
-	        
-	        gyroX.append(new Date().getTime(), app.sensorMpu9250GyroConvert(a[0]));
-	        gyroY.append(new Date().getTime(), app.sensorMpu9250GyroConvert(a[1]));
-	        gyroZ.append(new Date().getTime(), app.sensorMpu9250GyroConvert(a[2]));
-	        
-	        magX.append(new Date().getTime(), a[6]);
-	        magY.append(new Date().getTime(), a[7]);
-	        magZ.append(new Date().getTime(), a[8]);
-		};
-		
-		swInterface.registerMoveCallback(onMoveData);
-		swInterface.enableMoveCallback();
-		swInterface.setMovePeriod(0x0A);
-		swInterface.enableAllMove();
+	    	var accelX = new TimeSeries();
+	    	var accelY = new TimeSeries();
+	    	var accelZ = new TimeSeries();
+
+	    	var gyroX = new TimeSeries();
+	    	var gyroY = new TimeSeries();
+	    	var gyroZ = new TimeSeries();
+
+	    	var magX = new TimeSeries();
+	    	var magY = new TimeSeries();
+	    	var magZ = new TimeSeries();
+	    	
+		    smoothieAccel.addTimeSeries(accelX, {lineWidth:2,strokeStyle:'#0000ff'});
+		    smoothieAccel.addTimeSeries(accelY, {lineWidth:2,strokeStyle:'#00ff00'});
+		    smoothieAccel.addTimeSeries(accelZ, {lineWidth:2,strokeStyle:'#ff0000'});
+		    smoothieAccel.streamTo(document.getElementById("accelCanvas" + device.id));
+	      
+			smoothieGyro.addTimeSeries(gyroX, {lineWidth:2,strokeStyle:'#0000ff'});
+			smoothieGyro.addTimeSeries(gyroY, {lineWidth:2,strokeStyle:'#00ff00'});
+			smoothieGyro.addTimeSeries(gyroZ, {lineWidth:2,strokeStyle:'#ff0000'});
+			smoothieGyro.streamTo(document.getElementById("gyroCanvas" + device.id));
+	    
+
+			smoothieMag.addTimeSeries(magX, {lineWidth:2,strokeStyle:'#0000ff'});
+			smoothieMag.addTimeSeries(magY, {lineWidth:2,strokeStyle:'#00ff00'});
+			smoothieMag.addTimeSeries(magZ, {lineWidth:2,strokeStyle:'#ff0000'});
+			smoothieMag.streamTo(document.getElementById("magCanvas" + device.id));
+			
+			var onDotMoveData = function(data){
+		        var a = new Int16Array(data);
+		        
+		        accelX.append(new Date().getTime(), app.sensorMpu9250AccConvert(a[3]));
+		        accelY.append(new Date().getTime(), app.sensorMpu9250AccConvert(a[4]));
+		        accelZ.append(new Date().getTime(), app.sensorMpu9250AccConvert(a[5]));
+		        
+		        gyroX.append(new Date().getTime(), app.sensorMpu9250GyroConvert(a[0]));
+		        gyroY.append(new Date().getTime(), app.sensorMpu9250GyroConvert(a[1]));
+		        gyroZ.append(new Date().getTime(), app.sensorMpu9250GyroConvert(a[2]));
+		        
+		        magX.append(new Date().getTime(), a[6]);
+		        magY.append(new Date().getTime(), a[7]);
+		        magZ.append(new Date().getTime(), a[8]);
+			};
+			
+			pmlDotMove.registerMoveCallback(device.id, onDotMoveData);
+			pmlDotMove.enableMoveCallback(device.id);
+			pmlDotMove.setMovePeriod(device.id, 0x0A);
+			pmlDotMove.enableAllMove(device.id);
+			
+		}else if(device.name === "Polymorphic AHRS"){
+			
+			var onOrientationData = function(data){
+		        var quaternion = new Int16Array(data);
+		        
+		    	var q0 = quaternion[0]/0x4000;
+		    	var q1 = quaternion[1]/0x4000;
+		    	var q2 = quaternion[2]/0x4000;
+		    	var q3 = quaternion[3]/0x4000;
+		    		  
+				var gx = 2 * (q1*q3 - q0*q2);
+				var gy = 2 * (q0*q1 + q2*q3);
+				var gz = q0*q0 - q1*q1 - q2*q2 + q3*q3;
+				  
+				var yaw = Math.atan2(2 * q1 * q2 - 2 * q0 * q3, 2 * q0*q0 + 2 * q1 * q1 - 1) * 180/Math.PI;
+				var pitch = Math.atan(gx / Math.sqrt(gy*gy + gz*gz))  * 180/Math.PI;
+				var roll = Math.atan(gy / Math.sqrt(gx*gx + gz*gz))  * 180/Math.PI;
+		        
+
+			};
+			pmlAHRS.registerOrientationCallback(device.id, onOrientationData);
+			pmlAHRS.setOperatingMode(device.id, 0x0C);
+			//wait for the write to go through
+			setTimeout(function(){pmlAHRS.enableOrientationCallback(device.id)}, 250);
+		}
     	
     },
     connect: function() {

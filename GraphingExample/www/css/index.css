@@ -9,7 +9,7 @@ html, body {
 	margin: 0;
 	padding: 0;
    height:100%;
-	background: #FFFFFF url(images/img01.gif) repeat-x;
+	background: #FFFFFF;
 	font-size: 15px;
 	color: #666666;
 }

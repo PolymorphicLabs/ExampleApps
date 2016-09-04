@@ -57,7 +57,7 @@ var app = {
     	app.localPressure = app.currentPressure;
     },
     onDeviceReady: function() {
-        pmlManager.startScan(app.onDiscoverDevice);
+        app.showMainPage();
     },
     onSelectDevice: function(e){
     	if(e.checked){
@@ -69,10 +69,10 @@ var app = {
     	}
     	
     },
-    onDiscoverDevice: function(device) {
+    onDiscoverDevice: function(device, color) {
 
         var listItem = document.createElement('li'),
-        html = '<b>' + device.name + '</b><div style="float:right;"><input type="checkbox" onclick="app.onSelectDevice(this);" name="connect-group" value="' +
+        html = '<b>' + device.name +'<font color="'+color+'"> •</font>'+ '</b><div style="float:right;"><input type="checkbox" onclick="app.onSelectDevice(this);" name="connect-group" value="' +
         device.id + '" /></div><br/>' +
             'RSSI: ' + device.rssi + '&nbsp;|&nbsp;' +
             device.id + '<hr>';
@@ -107,9 +107,9 @@ var app = {
 //    	position.coords.altitude
 //    	position.coords.speed
     },
-    onDeviceConnect: function(swInterface){
+    onDeviceConnect: function(device){
     	//Save interface
-    	app.connectedDevices.push(swInterface);
+    	app.connectedDevices.push(device.id);
     	
     	var options = {
     		    size : (window.innerWidth / 2) - 10,             // Sets the size in pixels of the indicator (square)
@@ -127,7 +127,7 @@ var app = {
     	var headingIndicator = $.flightIndicator('#heading', 'heading', options);
     	var altitudeIndicator = $.flightIndicator('#altimeter', 'altimeter', options);
 //    	var smoothieAlt = new SmoothieChart({millisPerPixel:1000, minValue:0, maxValue:5000, grid:{fillStyle:'#ffffff',strokeStyle:'#ffffff'},labels:{fillStyle:'#ee7217'}});
-    	var smoothieAlt = new SmoothieChart({millisPerPixel:1000,grid:{fillStyle:'#ffffff',sharpLines:true,millisPerLine:60000,verticalSections:5},labels:{fillStyle:'#ee7217'},timestampFormatter:SmoothieChart.timeFormatter,maxValue:5000,minValue:0});
+    	var smoothieAlt = new SmoothieChart({millisPerPixel:1000,grid:{fillStyle:'#ffffff',sharpLines:true,millisPerLine:60000,verticalSections:5},labels:{fillStyle:'#ee7217'},timestampFormatter:SmoothieChart.timeFormatter,maxValue:70,minValue:0});
     	
     	
     	document.getElementById("altCanvas").width = (window.innerWidth / 2) - 10;
@@ -135,151 +135,204 @@ var app = {
     	var altSeries = new TimeSeries();
     	smoothieAlt.addTimeSeries(altSeries, {lineWidth:2,strokeStyle:'#ee7217'});
     	smoothieAlt.streamTo(document.getElementById("altCanvas"));
+    	
+    	if(device.name === "Polymorphic Dot"){
 		
-		var onMoveData = function(data){
-//	        var a = new Int16Array(data);
-		};
-		
-
-
-		function simple_moving_averager(period) {
-		    var nums = [];
-		    return function(num) {
-		        nums.push(num);
-		        if (nums.length > period)
-		            nums.splice(0,1);  // remove the first element of the array
-		        var sum = 0;
-		        for (var i in nums)
-		            sum += nums[i];
-		        var n = period;
-		        if (nums.length < period)
-		            n = nums.length;
-		        return(sum/n);
-		    }
-		}
-
-		var filtHeading = simple_moving_averager(3);
-		var filtPitch = simple_moving_averager(3);
-		var filtRoll = simple_moving_averager(3);
-		
-
-
-
-		
-		var onAhrsData = function(data){
+			var onMoveData = function(data){
+	//	        var a = new Int16Array(data);
+			};
 			
-	    	var quaternion = new Float32Array(data);
-	    	var q0 = quaternion[0];
-	    	var q1 = quaternion[1];
-	    	var q2 = quaternion[2];
-	    	var q3 = quaternion[3];
-	    		  
-			var gx = 2 * (q1*q3 - q0*q2);
-			var gy = 2 * (q0*q1 + q2*q3);
-			var gz = q0*q0 - q1*q1 - q2*q2 + q3*q3;
-			  
-			var yaw = Math.atan2(2 * q1 * q2 - 2 * q0 * q3, 2 * q0*q0 + 2 * q1 * q1 - 1) * 180/Math.PI;
-			var pitch = Math.atan(gx / Math.sqrt(gy*gy + gz*gz))  * 180/Math.PI;
-			var roll = Math.atan(gy / Math.sqrt(gx*gx + gz*gz))  * 180/Math.PI;
+	
+	
+			function simple_moving_averager(period) {
+			    var nums = [];
+			    return function(num) {
+			        nums.push(num);
+			        if (nums.length > period)
+			            nums.splice(0,1);  // remove the first element of the array
+			        var sum = 0;
+			        for (var i in nums)
+			            sum += nums[i];
+			        var n = period;
+			        if (nums.length < period)
+			            n = nums.length;
+			        return(sum/n);
+			    }
+			}
+	
+			var filtHeading = simple_moving_averager(3);
+			var filtPitch = simple_moving_averager(3);
+			var filtRoll = simple_moving_averager(3);
 			
-//			smoothHeading(yaw);
-//			smoothRoll(roll);
-//			smoothPitch(pitch);
+	
+	
+	
+			
+			var onAhrsData = function(data){
+				
+		    	var quaternion = new Float32Array(data);
+		    	var q0 = quaternion[0];
+		    	var q1 = quaternion[1];
+		    	var q2 = quaternion[2];
+		    	var q3 = quaternion[3];
+		    		  
+				var gx = 2 * (q1*q3 - q0*q2);
+				var gy = 2 * (q0*q1 + q2*q3);
+				var gz = q0*q0 - q1*q1 - q2*q2 + q3*q3;
+				  
+				var yaw = Math.atan2(2 * q1 * q2 - 2 * q0 * q3, 2 * q0*q0 + 2 * q1 * q1 - 1) * 180/Math.PI;
+				var pitch = Math.atan(gx / Math.sqrt(gy*gy + gz*gz))  * 180/Math.PI;
+				var roll = Math.atan(gy / Math.sqrt(gx*gx + gz*gz))  * 180/Math.PI;
+				
+	//			smoothHeading(yaw);
+	//			smoothRoll(roll);
+	//			smoothPitch(pitch);
+	
+		        headingIndicator.setHeading(filtHeading(yaw));
+		        attitudeIndicator.setRoll(filtRoll(roll));
+		        attitudeIndicator.setPitch(filtPitch(pitch));
+		        
+	//	        headingIndicator.setHeading(yaw);
+	//	        attitudeIndicator.setRoll(roll);
+	//	        attitudeIndicator.setPitch(pitch);
+			};
+			
+			var onBaroData = function(data){
+		         var a = new Float32Array(data);
+		         var altitude = (app.localPressure - app.sensorBarometerPressureConvert(a[0])) * 0.0366;
+		         app.currentPressure = app.sensorBarometerPressureConvert(a[0]);
+	
+		         altSeries.append(new Date().getTime(), altitude);
+		         altitudeIndicator.setAltitude(altitude);
+			};
+			
+			swInterface.registerMoveCallback(onMoveData);
+			swInterface.enableMoveCallback();
+			swInterface.setMovePeriod(0x0A);
+			swInterface.enableAllMove();
+			
+			swInterface.registerAhrsCallback(onAhrsData);
+			swInterface.enableAhrsCallback();
+			swInterface.enableAhrs();
+			
+			swInterface.registerBaroCallback(onBaroData);
+			swInterface.enableBaroCallback();
+			swInterface.enableBaro();
+		
+    	}else if(device.name === "Polymorphic AHRS"){
+    		
+			var onBaroData = function(data){
+		         var a = new Float32Array(data);
+//		         var altitude = (app.localPressure - app.sensorBarometerPressureConvert(a[0])) * 0.0366;
+		         var altitude = (1-(app.sensorBarometerPressureConvert(a[0])/1013.25)^0.190248) * 145366.45;
+		         app.currentPressure = app.sensorBarometerPressureConvert(a[0]);
+	
+		         altSeries.append(new Date().getTime(), altitude);
+		         altitudeIndicator.setAltitude(altitude);
+			};
+    		
+			var onOrientationData = function(data){
+		        var quaternion = new Int16Array(data);
+		        
+		    	var q0 = quaternion[0]/0x4000;
+		    	var q1 = quaternion[1]/0x4000;
+		    	var q2 = quaternion[2]/0x4000;
+		    	var q3 = quaternion[3]/0x4000;
+		    		  
+				var gx = 2 * (q1*q3 - q0*q2);
+				var gy = 2 * (q0*q1 + q2*q3);
+				var gz = q0*q0 - q1*q1 - q2*q2 + q3*q3;
+				  
+				var yaw = Math.atan2(2 * q1 * q2 - 2 * q0 * q3, 2 * q0*q0 + 2 * q1 * q1 - 1) * 180/Math.PI;
+				var pitch = Math.atan(gx / Math.sqrt(gy*gy + gz*gz))  * 180/Math.PI;
+				var roll = Math.atan(gy / Math.sqrt(gx*gx + gz*gz))  * 180/Math.PI;
+				
+		        headingIndicator.setHeading(yaw);
+		        attitudeIndicator.setRoll(roll);
+		        attitudeIndicator.setPitch(pitch);
+		        
 
-	        headingIndicator.setHeading(filtHeading(yaw));
-	        attitudeIndicator.setRoll(filtRoll(roll));
-	        attitudeIndicator.setPitch(filtPitch(pitch));
-	        
-//	        headingIndicator.setHeading(yaw);
-//	        attitudeIndicator.setRoll(roll);
-//	        attitudeIndicator.setPitch(pitch);
-		};
-		
-		var onBaroData = function(data){
-	         var a = new Float32Array(data);
-	         var altitude = (app.localPressure - app.sensorBarometerPressureConvert(a[0])) * 0.0366;
-	         app.currentPressure = app.sensorBarometerPressureConvert(a[0]);
-
-	         altSeries.append(new Date().getTime(), altitude);
-	         altitudeIndicator.setAltitude(altitude);
-		};
-		
-		swInterface.registerMoveCallback(onMoveData);
-		swInterface.enableMoveCallback();
-		swInterface.setMovePeriod(0x0A);
-		swInterface.enableAllMove();
-		
-		swInterface.registerAhrsCallback(onAhrsData);
-		swInterface.enableAhrsCallback();
-		swInterface.enableAhrs();
-		
-		swInterface.registerBaroCallback(onBaroData);
-		swInterface.enableBaroCallback();
-		swInterface.enableBaro();
+			};
+			
+//			pmlAHRS.registerPressureCallback(device.id, onBaroData);
+//			pmlAHRS.enablePressureCallback(device.id);
+			
+			pmlAHRS.registerOrientationCallback(device.id, onOrientationData);
+			pmlAHRS.setMovePeriod(device.id, 0x0A);
+			pmlAHRS.setOperatingMode(device.id, 0x0C);
+			//wait for the write to go through
+			setTimeout(function(){pmlAHRS.enableOrientationCallback(device.id)}, 250);
+    		
+    	}
 		
 
-		var icarus_center = new plugin.google.maps.LatLng(35.254642, -95.123247);
-		var icarus_start = new plugin.google.maps.LatLng(35.327283, -94.472282);
-		var loves = new plugin.google.maps.LatLng(35.486426, -95.149615);
-		var mcalester = new plugin.google.maps.LatLng(34.932760, -95.731597);
+//		var icarus_center = new plugin.google.maps.LatLng(35.254642, -95.123247);
+//		var icarus_start = new plugin.google.maps.LatLng(35.327283, -94.472282);
+//		var loves = new plugin.google.maps.LatLng(35.486426, -95.149615);
+//		var mcalester = new plugin.google.maps.LatLng(34.932760, -95.731597);
 		
-		var onMapInit = function(){
-			app.mapReady = 1;
-			app.map.setMapTypeId(plugin.google.maps.MapTypeId.HYBRID);
-			app.map.setCenter(icarus_center);
-			app.map.setZoom(8);
-			
-			app.map.addMarker({
-				  'position': loves,
-				  'title': 'Loves',
-				  'icon': {
-				    'url': 'www/img/gas.png'
-				   }
-				});
-			
-		      app.map.addPolyline({
-		          points: [
-		            icarus_start,
-		            loves,
-		            mcalester,
-		            icarus_start
-		          ],
-		          'color' : '#E75C14',
-		          'width': 3,
-		          'geodesic': true
-		        });
-			
-		};
+//		var onMapInit = function(){
+//			app.mapReady = 1;
+//			app.map.setMapTypeId(plugin.google.maps.MapTypeId.HYBRID);
+//			app.map.setCenter(icarus_center);
+//			app.map.setZoom(8);
+//			
+//			app.map.addMarker({
+//				  'position': loves,
+//				  'title': 'Loves',
+//				  'icon': {
+//				    'url': 'www/img/gas.png'
+//				   }
+//				});
+//			
+//		      app.map.addPolyline({
+//		          points: [
+//		            icarus_start,
+//		            loves,
+//		            mcalester,
+//		            icarus_start
+//		          ],
+//		          'color' : '#E75C14',
+//		          'width': 3,
+//		          'geodesic': true
+//		        });
+//			
+//		};
 		
 
 		// Define a div tag with id="map_canvas"
-		var mapDiv = document.getElementById("mapBody");
+//		var mapDiv = document.getElementById("mapBody");
 
 		// Initialize the map plugin
-		app.map = plugin.google.maps.Map.getMap(mapDiv);
+//		app.map = plugin.google.maps.Map.getMap(mapDiv);
 
 		// You have to wait the MAP_READY event.
-		app.map.on(plugin.google.maps.event.MAP_READY, onMapInit);
+//		app.map.on(plugin.google.maps.event.MAP_READY, onMapInit);
 
 		
-        app.locationWatch = navigator.geolocation.watchPosition(app.updatePosition,
-                function(error){console.log(error);},
-                {enableHighAccuracy: true});
-        
-        app.intervalId = window.setInterval(addPositionMarker, 60000);
-
-        function addPositionMarker() {
-          app.map.addMarker({
-			  'position': new plugin.google.maps.LatLng(app.latitude, app.longitude),
-			  'icon': 'blue'
-			});
-        }
+//        app.locationWatch = navigator.geolocation.watchPosition(app.updatePosition,
+//                function(error){console.log(error);},
+//                {enableHighAccuracy: true});
+//        
+//        app.intervalId = window.setInterval(addPositionMarker, 60000);
+//
+//        function addPositionMarker() {
+//          app.map.addMarker({
+//			  'position': new plugin.google.maps.LatLng(app.latitude, app.longitude),
+//			  'icon': 'blue'
+//			});
+//        }
 		
     	
     },
     connect: function() {
     	pmlManager.stopScan();
     	pmlManager.connect(app.selectedDevices, app.onDeviceConnect);
+    	
+    	//Clear Device List
+    	while (deviceList.firstChild) {
+    		deviceList.removeChild(deviceList.firstChild);
+    	}
 
     	app.showDetailPage();
    
@@ -318,6 +371,8 @@ var app = {
         mainPage.style.display = "block";
         detailPage.style.display = "none";
         mapPage.style.display = "none";
+        
+        pmlManager.startScan(app.onDiscoverDevice);
     },
     showDetailPage: function() {
         mainPage.style.display = "none";
