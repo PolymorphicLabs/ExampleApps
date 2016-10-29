@@ -7,55 +7,92 @@
 
         <link rel="stylesheet" type="text/css" href="css/index.css" />
         <link rel="stylesheet" type="text/css" href="css/flightindicators.css" />
-        <title>SensorTag</title>
+        <title>Polymorphic Labs Paragliding App</title>
     </head>
     <body>
         <div class="app">
-            <h1>Polymorphic Labs</h1>
-            <div id="mainPage">
-                <ul id="deviceList">
-                </ul>
+            <div id="headerImg"><br><img src="img/PolymorphicLabsLogo_Sept16.png" alt="Polymorphic Labs" style="display:block;width:90%;margin:auto;"><br></div>
+            <div id="mainPage" style="display:block">
+
+                	<b>Left Brake</b><br>
+                		<ul id="leftList"></ul>
+
+                	<hr>
+                	<b>Center Canopy</b><br>
+                		<ul id="centerList"></ul>
+
+                	<hr>
+                	<b>Right Brake</b><br>
+                		<ul id="rightList"></ul>
+
+                	<hr>
+                	<b>Helmet</b><br>
+                		<ul id="helmetList"></ul>
+                	
+
                 
                 <footer id="Footer">
                 	<button id="connectButton">Connect</button>
 
                 </footer>
             </div>
+            
+            
+            
             <div id="detailPage" style="display:none;">
             	<div id="dataBody">
-            		<span id="attitude"></span>
-            		<span id="heading"></span>
-            		<span id="altimeter"></span>
-            		<span id="altGraph">
-            			<canvas id="altCanvas" width="100" height="100"></canvas>
-            		</span>
-            		<span id="speedText"></span>
-            		<span id="headingText"></span>
-					<span id="altitudeText"></span>
-
+            	
+ 					<div class="column-left"> L
+						<canvas id="leftBrakeCanvas"></canvas>
+					</div> 
+					
+					<div class="column-center">
+						<span id="attitude" style="display:table;margin: 0 auto;"></span>
+ 						<span id="textData">
+							<table style="width:90%">
+								<tr>
+									<td id="speedText">Ground Speed <br> data
+									</td>
+									<td id="headingText">Heading <br> data
+									</td>
+									<td id="gpsAltText">Altitude <br> data
+									</td>
+								</tr>
+								<tr>
+									<td id="timerText">Timer <br> data
+									</td>
+									<td id="temperatureText">Temperature <br> data
+									</td>
+									<td id="pressureAltText">Pressure Altitude <br> data
+									</td>
+								</tr>
+								<tr>
+									<td id="pitchText">Pitch <br> data
+									</td>
+									<td id="rollText">Roll <br> data
+									</td>
+									<td id="humidtyText">RH <br> data
+									</td>
+								</tr>
+							</table>
+						</span> 
+					</div>
+					
+					
+ 					<div class="column-right">R
+						<canvas id="rightBrakeCanvas"></canvas>
+					</div>
                 </div>
+                
                 <span id="Footer">
-                	<button id="altButton">Zero Altimeter</button>
                 	<button id="disconnectButton">Disconnect</button>
-                	<button id="mapButton">Map</button>
                 </span>
             </div>
-            <div id="mapPage" style="display:none;">
-            	<div style="width:100%;height:400px" id="mapBody">
-
-                </div>
-                <footer id="Footer">
-                	<button id="detailButton">Show Instruments</button>
-                </footer>
-            </div>
+            
         </div>
         <script type="text/javascript" src="cordova.js"></script>
         <script type="text/javascript" src="js/jquery-2.2.3.min.js"></script>
 		<script type="text/javascript" src="js/jquery.flightindicators.js"></script>
-		<script type="text/javascript" src="js/MadgwickAHRS.js"></script>
-        <script type="text/javascript" src="js/pmlManager.js"></script>
-        <script type="text/javascript" src="js/pmlDotMove.js"></script>
-        <script type="text/javascript" src="js/smoothie.js"></script>
         <script type="text/javascript" src="js/index.js"></script>
         
         <script type="text/javascript">
